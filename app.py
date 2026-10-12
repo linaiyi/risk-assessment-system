@@ -25,7 +25,18 @@ features = features_cf
 
 # ==================== 风险计算函数 ====================
 def compute_ri(pred_cf, pred_apha, pred_f):
-    return 0.4 * pred_cf + 0.3 * pred_apha + 0.3 * pred_f
+    # 定义各预测值的最小值和最大值（根据你提供的表）
+    min_f, max_f = 0.66846, 2.039469        # 对应 pred_cf
+    min_apha, max_apha = 0.220223, 6.326085 # 对应 pred_apha
+    min_int1, max_int1 = 0.133038, 6.131449 # 对应 pred_f
+
+    # Min-Max 归一化到 [0, 1]
+    norm_cf = (pred_cf - min_f) / (max_f - min_f)
+    norm_apha = (pred_apha - min_apha) / (max_apha - min_apha)
+    norm_f = (pred_f - min_int1) / (max_int1 - min_int1)
+
+    # 加权求和（权重不变：0.4, 0.3, 0.3）
+    return 0.4 * norm_cf + 0.3 * norm_apha + 0.3 * norm_f
 
 def get_risk_level(ri):
     if ri < 0.2:
